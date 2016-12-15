@@ -1,14 +1,10 @@
 from xml.dom import minidom
 from os import path
-import re, os, shutil, platform
+import re, os, shutil, platform, stat, jar2dex
 
 script_dir = path.dirname(__file__)
 command_apktool = path.join(script_dir, 'apktool.jar')
 command_manifest_merger = path.join(script_dir, 'manifest-merger-jar-with-dependencies.jar')
-if 'Windows' in platform.system():
-	jar2Dex = os.sep.join([script_dir, 'dex2jar-2.0', 'd2j-jar2dex.bat'])
-else:
-	jar2Dex = os.sep.join([script_dir, 'dex2jar-2.0', 'd2j-jar2dex.sh'])
 command_baksmali = path.join(script_dir, 'baksmali-2.1.3.jar')
 
 def unpack_apk(target_apkfile):
@@ -66,8 +62,7 @@ class AndroidSdkTool:
 		print('start add jar %s to apk' % jarName)
 		## Jar to Dex
 		dexFile = os.path.join(os.path.dirname(jarName), 'classes.dex')
-		if os.system('%s %s -o %s --force' % (jar2Dex, jarName, dexFile)) != 0:
-			raise Exception('jar %s to dex failed' % jarName)
+		jar2dex.jar2dex('%s -o %s --force' % (jarName, dexFile))
 
 		## Dex to Smali
 		if os.system('java -jar %s %s -o %s' % (command_baksmali, dexFile, path.join(self.base_folder, 'smali'))) != 0:

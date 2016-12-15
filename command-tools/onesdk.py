@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+#-*- coding: utf-8
+import argparse, ConfigParser, os, sys, androidsdktool
+
+parser = argparse.ArgumentParser(description='Onesdk command line tool')
+parser.add_argument('channel', help='渠道名称')
+parser.add_argument('platform', help='平台名称', choices=['ios', 'android'])
+parser.add_argument('filename', help='支持apk或ipa的解压目录，支持.apk或.ipa文件')
+parser.add_argument('appconfig', help='应用信息的配置文件路径')
+parser.add_argument('onesdkconfig', help='包名以及渠道号的配置文件路径')
+parser.add_argument('sdks', help='各个渠道sdk存放的路径')
+# parser.add_argument('integers', metavar='N', type=int, nargs='+',
+#                     help='an integer for the accumulator')
+# parser.add_argument('--sum', dest='accumulate', action='store_const',
+#                     const=sum, default=max,
+#                     help='sum the integers (default: find the max)')
+
+args = parser.parse_args()
+
+config = ConfigParser.ConfigParser()
+config.read(args.appconfig)
+origin_package_name_string = 'origin-package-name'
+product_name_string = 'product-name'
+origin_package_name = config.get('app-info', origin_package_name_string)
+product_name = config.get('app-info', product_name_string)
+config.read(args.onesdkconfig)
+
+def getChannelId():
+	return config.get('channels-id', args.channel)
+
+def getPackageName():
+	name = config.get('package-names', args.channel)
+	if origin_package_name_string in name:
+		return name.replace('{'+origin_package_name_string+'}', origin_package_name)
+	if product_name_string in name:
+		return name.replace('{'+product_name_string+'}', product_name)
+
+packageName = getPackageName()
+channelId = getChannelId()
+
+unzip_folder = args.filename
+isUnzipFolder = os.path.isdir(unzip_folder)
+if not isUnzipFolder:
+	unzip_folder = androidsdktool.unpack_apk(unzip_folder)
+androidSDKTool = androidsdktool.AndroidSdkTool(unzip_folder)
+androidSDKTool.manifestAddMetadata('channel_id', str(channelId))
+androidSDKTool.changePackageName(packageName)
+sdk_dir = os.path.join(args.sdks, args.channel)
+for f in os.listdir(sdk_dir):
+	source_file = os.path.join(sdk_dir, f)
+	if os.path.isdir(source_file):
+		androidSDKTool.copyFolder(source_file, f)
+	elif '.jar' in f:
+		androidSDKTool.addJar(source_file)
+	elif 'AndroidManifest.xml' == f:
+		androidSDKTool.manifestMerge(source_file)
+if not isUnzipFolder:
+	androidsdktool.pack_apk(args.filename)

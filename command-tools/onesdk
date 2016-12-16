@@ -38,21 +38,29 @@ def getPackageName():
 packageName = getPackageName()
 channelId = getChannelId()
 
-unzip_folder = args.filename
-isUnzipFolder = os.path.isdir(unzip_folder)
-if not isUnzipFolder:
-	unzip_folder = androidsdktool.unpack_apk(unzip_folder)
-androidSDKTool = androidsdktool.AndroidSdkTool(unzip_folder)
-androidSDKTool.manifestAddMetadata('channel_id', str(channelId))
-androidSDKTool.changePackageName(packageName)
-sdk_dir = os.path.join(args.sdks, args.channel)
-for f in os.listdir(sdk_dir):
-	source_file = os.path.join(sdk_dir, f)
-	if os.path.isdir(source_file):
-		androidSDKTool.copyFolder(source_file, f)
-	elif '.jar' in f:
-		androidSDKTool.addJar(source_file)
-	elif 'AndroidManifest.xml' == f:
-		androidSDKTool.manifestMerge(source_file)
-if not isUnzipFolder:
-	androidsdktool.pack_apk(args.filename)
+def androidonesdk():
+	unzip_folder = args.filename
+	isUnzipFolder = os.path.isdir(unzip_folder)
+	if not isUnzipFolder:
+		unzip_folder = androidsdktool.unpack_apk(unzip_folder)
+	androidSDKTool = androidsdktool.AndroidSdkTool(unzip_folder)
+	androidSDKTool.manifestAddMetadata('channel_id', str(channelId))
+	androidSDKTool.changePackageName(packageName)
+	sdk_dir = os.path.join(args.sdks, args.channel)
+	for f in os.listdir(sdk_dir):
+		source_file = os.path.join(sdk_dir, f)
+		if os.path.isdir(source_file):
+			androidSDKTool.copyFolder(source_file, f)
+		elif '.jar' in f:
+			androidSDKTool.addJar(source_file)
+		elif 'AndroidManifest.xml' == f:
+			androidSDKTool.manifestMerge(source_file)
+	if not isUnzipFolder:
+		androidsdktool.pack_apk(args.filename)
+
+if args.platform == 'android':
+	androidonesdk()
+
+if args.platform == 'ios':
+	print("onesdk for ios not implemented yet");
+

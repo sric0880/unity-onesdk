@@ -19,11 +19,11 @@ def unpack_apk(target_apkfile):
 	return unzip_folder
 
 def pack_apk(target_apkfile):
-	unzip_folder = path.dirname(target_apkfile)
+	unzip_folder,_ = path.splitext(target_apkfile)
 	cmd = 'java -jar %s b -o %s %s' % (command_apktool, target_apkfile, unzip_folder)
 	print(cmd)
 	if os.system(cmd) != 0:
-		raise Exception("Failed to pack pak")
+		raise Exception("Failed to pack apk")
 	shutil.rmtree(unzip_folder, True)
 
 class AndroidSdkTool:

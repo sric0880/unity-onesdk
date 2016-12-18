@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/onesdk/onesdk.iml" filepath="$PROJECT_DIR$/onesdk/onesdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/onesdk-demo/onesdk-demo.iml" filepath="$PROJECT_DIR$/onesdk-demo/onesdk-demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/platform-android.iml" filepath="$PROJECT_DIR$/platform-android.iml" />
+    </modules>
+  </component>
+</project>

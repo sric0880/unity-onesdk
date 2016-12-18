@@ -48,6 +48,15 @@ class AndroidSdkTool:
 		print('add metadata <name: %s value: %s>' % (name, value))
 		self._saveAndroidManifest(xml)
 
+# java -jar target/manifest-merger-jar-with-dependencies.jar  --main mainAndroidManifest.xml
+# --log [VERBOSE, INFO, WARNING, ERROR]
+# --libs [path separated list of lib's manifests]
+# --overlays [path separated list of overlay's manifests]
+# --property [PACKAGE | VERSION_CODE | VERSION_NAME | MIN_SDK_VERSION | TARGET_SDK_VERSION | MAX_SDK_VERSION=value]
+# --placeholder [name=value]
+# --out [path of the output file]
+# I have used this library as follows:
+# java -jar target/manifest-merger-jar-with-dependencies.jar --main <path_to_main_manifest> --libs <path_to_libs_manifests_divided by ':'> --out <output_manifest> --log WARNING
 	def manifestMerge(self, another_manifest):
 		cmd = 'java -jar %s --main %s --libs %s --out %s --log WARNING' % (command_manifest_merger, self.manifest_filename, another_manifest, self.manifest_filename)
 		print(cmd)

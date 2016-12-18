@@ -1,7 +1,6 @@
+build/
 *.pyc
 */dist/
 */build/
 */*.egg-info
 .DS_Store
-/oneSDK
-/sdks

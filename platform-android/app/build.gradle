@@ -1,0 +1,55 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.2"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 15
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    packagingOptions {
+        exclude 'com/tencent/mm/sdk/platformtools/rep5402863540997075488.tmp'
+    }
+}
+
+dependencies {
+    compile files('libs/mario-plugin.jar')
+    compile files('libs/libammsdk.jar')
+    compile files('libs/classes.jar')
+    compile files('libs/huaweipay_plugin.jar')
+    compile files('libs/IHuaweipay.jar')
+    compile files('libs/buoyopensdk.jar')
+    compile files('libs/CloudUpdate_SDK_1.1.18.jar')
+    compile files('libs/hianalytics_v2.8.jar')
+    compile files('libs/mario-plugin.jar')
+    compile files('libs/vivo/vivoUnionSDK_3.2.9.jar')
+    compile files('libs/vivo/vivoUpdateSDK.jar')
+    compile files('libs/yyb.jar')
+    compile files('libs/gamesdk-20160806.jar')
+    compile files('libs/360SDK.jar')
+}
+
+task deleteOldJar(type: Delete ) {
+    delete 'E:\\NinjaRun\\Assets\\Plugins\\Android\\ninjaslash.jar'
+}
+
+task exportJar( type: Copy )        {
+    from('build/intermediates/bundles/release/')
+    into('E:\\NinjaRun\\Assets\\Plugins\\Android')
+    include('classes.jar')
+    rename('classes.jar','ninjaslash.jar')
+}
+
+exportJar.dependsOn(deleteOldJar, build)

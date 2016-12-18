@@ -1,0 +1,46 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.2"
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    testCompile 'junit:junit:4.12'
+    compile files('libs/360/360SDK.jar')
+    compile files('libs/xiaomi/SDK_TY_4.6.11.jar')
+    compile files('libs/huawei/IHuaweipay.jar')
+    compile files('libs/wdj/mario-plugin.jar')
+    compile files('libs/vivo/vivoUnionSDK_3.2.9.jar')
+    compile files('libs/yyb/yyb.jar')
+    compile files('libs/huawei/buoyopensdk.jar')
+    compile files('libs/oppo/gamesdk-20160806.jar')
+}
+
+task buildAndCopyJar(type: Copy, dependsOn: 'build') {
+    from('build/intermediates/bundles/release/')
+    into('../../build')
+    include('classes.jar')
+    rename('classes.jar', 'onesdk.jar')
+}

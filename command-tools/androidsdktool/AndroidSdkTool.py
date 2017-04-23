@@ -38,6 +38,12 @@ class AndroidSdkTool:
 		print("change package name to %s" % package_name)
 		self._saveAndroidManifest(xml)
 
+	def getPackageName(self):
+		xml = minidom.parse(self.manifest_filename)
+		package_name = xml.documentElement.getAttribute('package')
+		print("get package name: %s" % package_name)
+		return package_name
+
 	def manifestAddMetadata(self, name, value):
 		xml = minidom.parse(self.manifest_filename)
 		application = xml.getElementsByTagName('application')[0]

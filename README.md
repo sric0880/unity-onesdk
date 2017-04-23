@@ -2,13 +2,22 @@
 onesdk for unity.
 
 ## Install
-```
+```sh
 cd command-tools
 sudo python setup.py install
+or
+sudo pip install .
 ```
 ## Usage
-```
-onesdk -h ##for help
+```sh
+## config
+cd /usr/local/onesdk
+## change the sdks-path to your own path
+## add your own package name and channel id
+vim onesdk.conf
+
+##for help
+onesdk -h
 ```
 ## platform-android
 library project for onesdk, not tested.

@@ -6,37 +6,25 @@ parser = argparse.ArgumentParser(description='Onesdk command line tool')
 parser.add_argument('channel', help='渠道名称')
 parser.add_argument('platform', help='平台名称', choices=['ios', 'android'])
 parser.add_argument('filename', help='支持apk或ipa的解压目录，支持.apk或.ipa文件')
-parser.add_argument('appconfig', help='应用信息的配置文件路径')
-parser.add_argument('onesdkconfig', help='包名以及渠道号的配置文件路径')
-parser.add_argument('sdks', help='各个渠道sdk存放的路径')
-# parser.add_argument('integers', metavar='N', type=int, nargs='+',
-#                     help='an integer for the accumulator')
-# parser.add_argument('--sum', dest='accumulate', action='store_const',
-#                     const=sum, default=max,
-#                     help='sum the integers (default: find the max)')
-
 args = parser.parse_args()
 
 config = ConfigParser.ConfigParser()
-config.read(args.appconfig)
+config.read('/usr/local/onesdk/onesdk.conf')
 origin_package_name_string = 'origin-package-name'
 product_name_string = 'product-name'
-origin_package_name = config.get('app-info', origin_package_name_string)
-product_name = config.get('app-info', product_name_string)
-config.read(args.onesdkconfig)
+sdk_dir = os.path.join(config.get('env', 'sdks-path'), args.channel)
 
 def getChannelId():
 	return config.get('channels-id', args.channel)
 
-def getPackageName():
+def getPackageName(origin_package_name):
 	name = config.get('package-names', args.channel)
 	if origin_package_name_string in name:
 		return name.replace('{'+origin_package_name_string+'}', origin_package_name)
 	if product_name_string in name:
+		## for example: com.tencent.ffom -> product_name: ffom
+		product_name = origin_package_name[origin_package_name.rfind('.')+1:]
 		return name.replace('{'+product_name_string+'}', product_name)
-
-packageName = getPackageName()
-channelId = getChannelId()
 
 def androidonesdk():
 	unzip_folder = args.filename
@@ -44,9 +32,17 @@ def androidonesdk():
 	if not isUnzipFolder:
 		unzip_folder = androidsdktool.unpack_apk(unzip_folder)
 	androidSDKTool = androidsdktool.AndroidSdkTool(unzip_folder)
+
+	# add channel id
+	channelId = getChannelId()
 	androidSDKTool.manifestAddMetadata('channel_id', str(channelId))
+
+	# change package name
+	origin_package_name = androidSDKTool.getPackageName()
+	packageName = getPackageName(origin_package_name)
 	androidSDKTool.changePackageName(packageName)
-	sdk_dir = os.path.join(args.sdks, args.channel)
+
+	# add sdk plugin
 	for f in os.listdir(sdk_dir):
 		source_file = os.path.join(sdk_dir, f)
 		if os.path.isdir(source_file):

@@ -1,11 +1,12 @@
 from xml.dom import minidom
 from os import path
-import re, os, shutil, platform, stat, jar2dex
+import re, os, shutil, platform, stat
+from androidsdktool import jar2dex
 
 script_dir = path.dirname(__file__)
 command_apktool = path.join(script_dir, 'apktool.jar')
 command_manifest_merger = path.join(script_dir, 'manifest-merger-jar-with-dependencies.jar')
-command_baksmali = path.join(script_dir, 'baksmali-2.1.3.jar')
+command_baksmali = path.join(script_dir, 'baksmali.jar')
 
 def unpack_apk(target_apkfile):
 	unzip_folder,_ = path.splitext(target_apkfile)
